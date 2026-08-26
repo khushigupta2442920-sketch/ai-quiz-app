@@ -1,0 +1,235 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuizAI - Book to Quiz</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            📚 Quiz<span>AI</span>
+        </div>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="#">My Quizzes</a>
+            <button id="darkModeToggle" style="background: none; border:none; font-size: 1.5rem; cursor: pointer; margin-left: 15px;">🌙</button>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <p class="tagline">
+                    AI POWERED STUDY TOOL
+                </p>
+
+                <h1>
+                    Turn Your Book
+                    <span>Into a Quiz.</span>
+                </h1>
+
+                <p class="description">
+                    Upload a photo of your book page and
+                    create an interactive quiz from it.
+                </p>
+
+            </div>
+
+
+            <div class="upload-card">
+
+                <div class="upload-icon">
+                    📸
+                </div>
+
+                <h2>
+                    Upload your book page
+                </h2>
+
+                <p>
+                    Choose a clear photo of a book page.
+                </p>
+
+                <label class="upload-button">
+
+                    Browse Image
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                </label>
+
+                <div id="imagePreview"></div>
+
+            </div>
+
+        </section>
+
+
+        <section class="settings">
+
+            <h2>
+                Quiz Settings
+            </h2>
+
+
+            <div class="settings-grid">
+
+
+                <div class="setting-box">
+
+                    <label for="language">
+                        🌐 Language
+                    </label>
+
+                    <select id="language">
+
+                        <option value="english">
+                            English
+                        </option>
+
+                        <option value="hindi">
+                            Hindi
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting-box">
+
+                    <label for="difficulty">
+                        🎯 Difficulty
+                    </label>
+
+                    <select id="difficulty">
+
+                        <option value="easy">
+                            Easy
+                        </option>
+
+                        <option value="medium" selected>
+                            Medium
+                        </option>
+
+                        <option value="hard">
+                            Hard
+                        </option>
+
+                        <option value="mixed">
+                            Mixed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting-box">
+
+                    <label for="questionCount">
+                        🔢 Questions
+                    </label>
+
+                    <select id="questionCount">
+
+                        <option value="5" selected>
+                            5 Questions
+                        </option>
+
+                        <option value="10">
+                            10 Questions
+                        </option>
+
+                        <option value="15">
+                            15 Questions
+                        </option>
+
+                        <option value="20">
+                            20 Questions
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+
+                <div class="setting-box">
+
+                    <label for="questionType">
+                        🧠 Question Type
+                    </label>
+
+                    <select id="questionType">
+
+                        <option value="mcq">
+                            Multiple Choice
+                        </option>
+
+                        <option value="truefalse">
+                            True / False
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="generate-button"
+                id="generateQuiz">
+
+                ✨ Generate Quiz
+
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            © 2026 QuizAI • Learn Smarter with AI
+        </p>
+
+    </footer>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

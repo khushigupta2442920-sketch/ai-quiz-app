@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
 import os
-from dotenv import load_dotenv
-load_dotenv()
 import pytesseract
 import google.generativeai as genai
 import re

@@ -74,8 +74,13 @@ def generate_quiz():
         # Direct prompt aur image Gemini ko bhej rahe hain
         response = model.generate_content([prompt, image])
         
-        # Gemini ne jo JSON bheja usko array mein badal rahe hain
-        questions_list = json.loads(response.text)
+        # Gemini ke extra json aur  ko saaf karne ka code
+        raw_text = response.text
+        clean_text = raw_text.replace("json", "").replace("", "").strip()
+        
+        # Ab saaf JSON ko array mein badal rahe hain
+        questions_list = json.loads(clean_text)
+
 
         # 3. CHECK IF PHOTO IS CLEAR (Agar Gemini ko text nahi mila toh woh [] bhejega)
         if not questions_list or len(questions_list) == 0:

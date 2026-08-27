@@ -76,7 +76,7 @@ def generate_quiz():
         
         # Gemini ke extra json aur  ko saaf karne ka code
         raw_text = response.text
-        clean_text = raw_text.replace("json", "").replace("", "").strip()
+        clean_text = raw_text.replace("```json", "").replace("```", "").strip()
         
         # Ab saaf JSON ko array mein badal rahe hain
         questions_list = json.loads(clean_text)

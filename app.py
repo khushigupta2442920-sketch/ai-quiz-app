@@ -13,7 +13,7 @@ app = Flask(__name__)
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # Model ko 'gemini-1.5-flash' kar diya hai (Yeh image padhne mein expert hai)
-model = genai.GenerativeModel('gemini-1.5-flash',
+model = genai.GenerativeModel('gemini-3.5-flash',
                               generation_config={"response_mime_type":"application/json"})
 
 # -----------------------------

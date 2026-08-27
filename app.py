@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
 import os
-import pytesseract
 import google.generativeai as genai
-import re
 import json
 
 app = Flask(__name__)
@@ -11,13 +9,12 @@ app = Flask(__name__)
 # -----------------------------
 # AI SETUP (GEMINI)
 # -----------------------------
-# Yahan apni asli API key daalein!
+# Yahan apni asli API key aayegi (Environment variable se)
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-3.5-flash',
-                              generation_config={"response_mime_type":"application/json"})
 
-# Tesseract ka path
-#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# Model ko 'gemini-1.5-flash' kar diya hai (Yeh image padhne mein expert hai)
+model = genai.GenerativeModel('gemini-1.5-flash',
+                              generation_config={"response_mime_type":"application/json"})
 
 # -----------------------------
 # HOME PAGE
@@ -45,31 +42,14 @@ def generate_quiz():
     except Exception:
         return jsonify({"success": False, "message": "Could not read the image."}), 400
 
-    # 2. OCR (SCAN TEXT)
+    # 2. CREATE QUESTIONS DIRECTLY USING GEMINI VISION
     try:
-        text = pytesseract.image_to_string(image)
-        # Clean text
-        text = text.replace("\n", " ")
-        text = re.sub(r"\s+", " ", text).strip()
-    except Exception:
-        return jsonify({"success": False, "message": "OCR could not read the image."}), 500
-
-    # 3. CHECK IF PHOTO IS CLEAR (Aapki Requirement)
-    # Agar Tesseract ko 50 letters se kam milte hain, toh matlab photo blur hai ya kachra hai
-    if len(text) < 50:
-        return jsonify({
-            "success": False, 
-            "message": "Photo clear nahi hai. Kripya ek saaf (clear) photo upload karein jisme text theek se dikh raha ho!"
-        }), 400
-
-    # 4. CREATE QUESTIONS USING GEMINI AI (Advanced Prompt)
-    try:
+        # Prompt ko update kar diya taaki woh blur photo bhi check kar le
         prompt = f"""
-        You are an expert teacher. Read the following text extracted from a book:
-        ---
-        {text}
-        ---
-        Based ONLY on this text, generate exactly {question_count} quiz questions.
+        You are an expert teacher. Look at the attached image of a book page.
+        First, check if the image is readable and contains enough text. If the image is blurry, blank, or does not contain readable text, return an empty JSON array: []
+
+        If the text is readable, generate exactly {question_count} quiz questions based ONLY on the text in the image.
         Language: {language}
         Difficulty: {difficulty}
 
@@ -78,7 +58,7 @@ def generate_quiz():
         2. Fill in the Blanks
         3. True or False
 
-        Respond STRICTLY in a JSON array format. Do not use markdown blocks like json.
+        Respond STRICTLY in a JSON array format.
         Structure each question exactly like this:
         [
           {{
@@ -91,10 +71,18 @@ def generate_quiz():
         For True/False questions, give only 2 options: ["True", "False"] or ["Sahi", "Galat"].
         """
 
-        response = model.generate_content(prompt)
-        raw_text = response.text
-        clean_text = raw_text.replace("json", "").replace("", "").strip()
-        questions_list = json.loads(clean_text)
+        # Direct prompt aur image Gemini ko bhej rahe hain
+        response = model.generate_content([prompt, image])
+        
+        # Gemini ne jo JSON bheja usko array mein badal rahe hain
+        questions_list = json.loads(response.text)
+
+        # 3. CHECK IF PHOTO IS CLEAR (Agar Gemini ko text nahi mila toh woh [] bhejega)
+        if not questions_list or len(questions_list) == 0:
+            return jsonify({
+                "success": False, 
+                "message": "Photo clear nahi hai ya text theek se padha nahi ja raha. Kripya ek saaf (clear) photo upload karein!"
+            }), 400
 
         return jsonify({
             "success": True,
